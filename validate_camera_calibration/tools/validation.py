@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 import cv2
@@ -51,6 +52,8 @@ def validate(
         if Path(f).suffix.lower() in supported_extensions
         and not Path(f).stem.startswith(".")
     ]
+
+    image_files.sort()
 
     print(f"Found {len(image_files)} images in {dir_calibration}.")
     assert (
@@ -130,7 +133,7 @@ def validate(
     if export_undistorted_images:
         dir_undistorted = Path(os.path.join(dir_base, "undistorted"))
         if dir_undistorted.exists():
-            os.removedirs(dir_undistorted)
+            shutil.rmtree(dir_undistorted)
         os.mkdir(dir_undistorted)
         for image_file in track(image_files, "Saving undistorted images"):
             image = Image.from_file(os.path.join(dir_calibration, image_file))
@@ -143,6 +146,8 @@ def validate(
             )
     if export_poses:
         dir_poses = Path(os.path.join(dir_base, "poses"))
+        if dir_poses.exists():
+            shutil.rmtree(dir_poses)
         dir_poses.mkdir(parents=True, exist_ok=True)
         for i, pose in enumerate(track(poses, "Saving poses")):
             file_pose = Path(os.path.join(dir_poses, f"pose_{i:04d}.yaml"))
