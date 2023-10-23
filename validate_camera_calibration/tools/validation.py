@@ -112,10 +112,16 @@ def validate(
         rQOi_reprojected = rQOi_reprojected.reshape(-1, 2)
         reprojection_error = np.linalg.norm(rQOi_reprojected - rQOi, axis=1)
 
+        rNCc = tvec
+        Rcn, _ = cv2.Rodrigues(rvec)
+
+        Rnc = Rcn.T
+        rCNn = -Rnc @ rNCc
+
         # Add pose to image
         pose = dict()
-        pose["rvec"] = rvec
-        pose["tvec"] = tvec
+        pose["rCNn"] = rCNn
+        pose["Rnc"] = Rnc
         pose["reprojection_error"] = reprojection_error
         pose["source_name"] = image.file_path
         poses.append(pose)
@@ -154,7 +160,12 @@ def validate(
             image_name = Path(pose["source_name"]).stem
             file_pose = Path(os.path.join(dir_poses, f"pose_{image_name}.yaml"))
             pose_out = dict()
-            pose_out["rvec"] = yu.numpy_to_yaml_dict(pose["rvec"])
-            pose_out["tvec"] = yu.numpy_to_yaml_dict(pose["tvec"])
+            #
+            pose_out["rCNn"] = yu.numpy_to_yaml_dict(pose["rCNn"])
+            #
+            pose_out["Rnc"] = yu.numpy_to_yaml_dict(pose["Rnc"])
+            #
+            rms = np.sqrt(np.mean(pose["reprojection_error"] ** 2))
+            pose_out["reprojection_error"] = rms.item()
             with open(file_pose, "w") as f:
                 yaml.dump(pose_out, f)
