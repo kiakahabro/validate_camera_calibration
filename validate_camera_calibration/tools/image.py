@@ -52,7 +52,9 @@ class Image:
         return self._has_calibration_artifact_in_frame
 
     def to_file(self, file_path: Path) -> None:
-        cv2.imwrite(file_path, self.img)
+        assert cv2.imwrite(
+            file_path, self.img
+        ), f"Failed to save {file_path}! Details:\n{self.__repr__()}"
 
     @staticmethod
     def from_file(file_path: Path) -> Self:
