@@ -117,6 +117,7 @@ def validate(
         pose["rvec"] = rvec
         pose["tvec"] = tvec
         pose["reprojection_error"] = reprojection_error
+        pose["source_name"] = image.file_path
         poses.append(pose)
 
     reprojection_errors = np.hstack([pose["reprojection_error"] for pose in poses])
@@ -150,8 +151,10 @@ def validate(
             shutil.rmtree(dir_poses)
         dir_poses.mkdir(parents=True, exist_ok=True)
         for i, pose in enumerate(track(poses, "Saving poses")):
-            file_pose = Path(os.path.join(dir_poses, f"pose_{i:04d}.yaml"))
-            pose["rvec"] = yu.numpy_to_yaml_dict(pose["rvec"])
-            pose["tvec"] = yu.numpy_to_yaml_dict(pose["tvec"])
+            image_name = Path(pose["source_name"]).stem
+            file_pose = Path(os.path.join(dir_poses, f"pose_{image_name}.yaml"))
+            pose_out = dict()
+            pose_out["rvec"] = yu.numpy_to_yaml_dict(pose["rvec"])
+            pose_out["tvec"] = yu.numpy_to_yaml_dict(pose["tvec"])
             with open(file_pose, "w") as f:
-                yaml.dump(pose, f)
+                yaml.dump(pose_out, f)
