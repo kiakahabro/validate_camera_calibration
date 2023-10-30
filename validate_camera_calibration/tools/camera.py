@@ -51,7 +51,23 @@ class Camera:
             yaml.dump(data, f)
 
     def __repr__(self) -> str:
-        return f"Camera(Kc={self.Kc.shape}, dist={self.dist.shape})"
+        fx = self.Kc[0, 0]
+        fy = self.Kc[1, 1]
+        cx = self.Kc[0, 2]
+        cy = self.Kc[1, 2]
+
+        k1 = self.dist[0, 0]
+        k2 = self.dist[0, 1]
+        p1 = self.dist[0, 2]
+        p2 = self.dist[0, 3]
+        k3 = self.dist[0, 4]
+
+        res = 7
+        out_str = "Camera\n"
+        out_str += f"Image size: {self.image_width}x{self.image_height}\n"
+        out_str += f"Affine params: fx: {fx:.{res}}, fy: {fy:.{res}}, cx: {cx:.{res}}, cy: {cy:.{res}}\n"
+        out_str += f"Distortion params: k1: {k1:.{res}}, k2: {k2:.{res}}, p1: {p1:.{res}}, p2: {p2:.{res}}, k3: {k3:.{res}}\n"
+        return out_str
 
     def undistort(self, img: np.ndarray) -> np.ndarray:
         assert isinstance(img, np.ndarray), "Expected img to be a numpy array!"
