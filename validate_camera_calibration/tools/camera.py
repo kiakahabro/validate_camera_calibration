@@ -36,8 +36,8 @@ class Camera:
         assert file_path.exists(), f"Expected {file_path} to exist."
         with open(file_path, "r") as f:
             data = yaml.safe_load(f)
-        Kc = yu.yaml_dict_to_numpy(data["camera_matrix"])
-        dist = yu.yaml_dict_to_numpy(data["distortion_coefficients"])
+        Kc = yu.yaml_to_numpy(data["camera_matrix"])
+        dist = yu.yaml_to_numpy(data["distortion_coefficients"])
         image_width = data["image_width"]
         image_height = data["image_height"]
         return Camera(Kc, dist, image_width, image_height, file_path)
