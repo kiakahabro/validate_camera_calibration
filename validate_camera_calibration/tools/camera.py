@@ -69,6 +69,38 @@ class Camera:
         out_str += f"Distortion params: k1: {k1:.{res}}, k2: {k2:.{res}}, p1: {p1:.{res}}, p2: {p2:.{res}}, k3: {k3:.{res}}\n"
         return out_str
 
+    def as_latex_table(self, res: int = 7) -> str:
+        fx = self.Kc[0, 0]
+        fy = self.Kc[1, 1]
+        cx = self.Kc[0, 2]
+        cy = self.Kc[1, 2]
+
+        k1 = self.dist[0, 0]
+        k2 = self.dist[0, 1]
+        p1 = self.dist[0, 2]
+        p2 = self.dist[0, 3]
+        k3 = self.dist[0, 4]
+        data = [fx, fy, cx, cy, k1, k2, p1, p2, k3]
+        headings = [
+            "\\(f_x\\)",
+            "\\(f_y\\)",
+            "\\(c_x\\)",
+            "\\(c_y\\)",
+            "\\(k_1\\)",
+            "\\(k_2\\)",
+            "\\(p_1\\)",
+            "\\(p_2\\)",
+            "\\(k_3\\)",
+        ]
+        table_str = "%% LaTEX interpretable string: \n"
+        tab = "    "
+        table_str += "\\begin{tabular}{" + "c" * len(headings) + "}\n"
+        table_str += tab + " & ".join(headings) + "\\\\ \\hline \n"
+        table_str += tab + " & ".join([f"{x:.{res}}" for x in data]) + "\\\\ \\hline \n"
+        table_str += "\\end{tabular}"
+        table_str += "\n%%"
+        return table_str
+
     def undistort(self, img: np.ndarray) -> np.ndarray:
         assert isinstance(img, np.ndarray), "Expected img to be a numpy array!"
         assert (

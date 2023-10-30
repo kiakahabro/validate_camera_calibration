@@ -69,6 +69,8 @@ def validate(
     # Load camera parameters
     camera = Camera.from_file(file_camera_params)
 
+    print(camera.as_latex_table())
+
     # Load calibration grid
     calibration_grid = get_calibration_grid_parameters(file_calibration_grid_params)
     pattern_size = (calibration_grid["grid_width"], calibration_grid["grid_height"])
