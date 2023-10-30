@@ -19,8 +19,6 @@ app = typer.Typer(add_completion=False, rich_markup_mode="rich")
 filename = os.path.basename(__file__)
 
 
-# Callbacks
-# --------------------------------------------------
 def expected_calibration_directory_contents() -> str:
     supported_list = gn.join_string_with_commas(
         image.supported_image_extensions(), "or"
@@ -73,10 +71,21 @@ def check_calibration_directory_exists(root_path: Path) -> Path:
     return dir_calibration
 
 
+# Callbacks
+# --------------------------------------------------
 def root_path_callback(root_path: Path):
     if not root_path.is_dir():
         raise typer.BadParameter(f"Expected {root_path} to be a directory.")
     return root_path
+
+
+def camera_params_callback(camera_params_file: Path):
+    if camera_params_file is None:
+        return None
+    camera_params_file = Path(camera_params_file)
+    if not camera_params_file.is_file():
+        raise typer.BadParameter(f"Expected {camera_params_file} to be a file.")
+    return camera_params_file
 
 
 # --------------------------------------------------
@@ -139,15 +148,24 @@ def run_validation(
         help="Export undistorted to <root_path>/undistorted.",
         show_default=False,
     ),
+    camera_params_file: Optional[Path] = typer.Option(
+        None,
+        "--camera_params_file",
+        help="Path to camera parameters yaml file.",
+        show_default=False,
+        callback=camera_params_callback,
+    ),
 ):
     typer.echo(f"root_path is {root_path}")
 
     dir_calibration = check_calibration_directory_exists(root_path)
+
     validation.validate(
         root_path,
         dir_calibration,
         export_poses=export_poses,
         export_undistorted_images=export_undistorted,
+        file_camera_params=camera_params_file,
     )
 
 

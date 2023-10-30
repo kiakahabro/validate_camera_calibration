@@ -26,15 +26,21 @@ def validate(
     dir_calibration: Path,
     export_undistorted_images: bool = False,
     export_poses: bool = False,
+    file_camera_params: Path = None,
 ) -> None:
     assert dir_base.is_dir(), f"Expected {dir_base} to be a directory!"
     assert dir_calibration.is_dir(), f"Expected {dir_calibration} to be a directory!"
 
     # Check that the calibration directory contains a camera_params.yaml file
-    file_camera_params = Path(os.path.join(dir_calibration, "camera_params.yaml"))
-    assert (
-        file_camera_params.is_file()
-    ), f"Expected camera_params.yaml to be a file in {dir_calibration}!"
+    if file_camera_params is None:
+        file_camera_params = Path(os.path.join(dir_calibration, "camera_params.yaml"))
+        assert (
+            file_camera_params.is_file()
+        ), f"Expected camera_params.yaml to be a file in {dir_calibration}!"
+    else:
+        assert (
+            file_camera_params.is_file()
+        ), f"Expected {file_camera_params} to be a file!"
 
     # Check that the calibration directory contains a calibration_grid_params.yaml file
     file_calibration_grid_params = Path(
