@@ -30,6 +30,10 @@ class Camera:
         self.image_height = image_height
         self.from_file = from_file
 
+        if from_file is not None:
+            print(f"Loaded camera parameters from {from_file}.")
+            print(self.__repr__())
+
     @staticmethod
     def from_file(file_path: Path) -> Self:
         file_path = Path(file_path)
