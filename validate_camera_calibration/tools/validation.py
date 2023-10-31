@@ -79,6 +79,14 @@ def validate(
     images = []
     for image_file in track(image_files, "Loading images"):
         image = Image.from_file(os.path.join(dir_calibration, image_file))
+        assert image.shape[0] == camera.image_height, (
+            f"Expected image height to be {camera.image_height}, "
+            f"but it is {image.shape[0]}!"
+        )
+        assert image.shape[1] == camera.image_width, (
+            f"Expected image width to be {camera.image_width}, "
+            f"but it is {image.shape[1]}!"
+        )
 
         # Detect checkerboard
         image.detect_chessboard(pattern_size)

@@ -15,6 +15,7 @@ class Image:
             img, np.ndarray
         ), f"Expected img to be a numpy array, but it is of type {type(img).__name__}!"
         self.img = img
+        self.shape = img.shape
         self._has_calibration_artifact_in_frame = False
         self.file_path = file_path
         self.chess_board_corners = None
